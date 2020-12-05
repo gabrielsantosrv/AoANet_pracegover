@@ -182,7 +182,7 @@ class AoA_Decoder_Core(nn.Module):
             output = output + h_att
 
         output = self.out_drop(output)
-        return output, state
+        return output, state, att
 
 class AoAModel(AttModel):
     def __init__(self, opt):
