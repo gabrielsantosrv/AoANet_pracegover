@@ -20,7 +20,7 @@ from PIL import Image
 def plot_attention(image, seq, attention_plot, output_file):
     temp_image = np.array(Image.open(image))
 
-    fig = plt.figure(figsize=(10, 10))
+    fig = plt.figure(figsize=(30, 30))
 
     len_seq = len(seq)
     for l in range(len_seq):
@@ -31,6 +31,7 @@ def plot_attention(image, seq, attention_plot, output_file):
         ax.imshow(temp_att, cmap='gray', alpha=0.6, extent=img.get_extent())
 
     plt.tight_layout()
+    output_file = output_file.split('/')[1]
     plt.savefig("att_"+output_file)
 
 def get_attention_for_sentence(sent_index, attention_maps):
