@@ -14,20 +14,24 @@ import time
 import os
 import sys
 import misc.utils as utils
+import matplotlib.pyplot as plt
 
-def decode_gts(data_gts, ix_to_word):
-    sentences = []
-    for array in data_gts:
-        text = ''
-        # there is only one reference
-        ref = array[0]
-        for idx in ref:
-            if idx > 0:
-                text += ' ' + ix_to_word[str(idx)]
-            else:
-                break
-        sentences.append(text.strip())
-    return sentences
+
+def plot_attention(image, result, attention_plot):
+    temp_image = np.array(Image.open(image))
+
+    fig = plt.figure(figsize=(10, 10))
+
+    len_result = len(result)
+    for l in range(len_result):
+        temp_att = np.resize(attention_plot[l], (8, 8))
+        ax = fig.add_subplot(len_result//2, len_result//2, l+1)
+        ax.set_title(result[l])
+        img = ax.imshow(temp_image)
+        ax.imshow(temp_att, cmap='gray', alpha=0.6, extent=img.get_extent())
+
+    plt.tight_layout()
+    plt.show()
 
 def eval_split(model, loader, eval_kwargs={}):
     verbose = eval_kwargs.get('verbose', True)
@@ -41,6 +45,8 @@ def eval_split(model, loader, eval_kwargs={}):
     n = 0
     predictions = []
     iterations = 0
+    attention_weighs = []
+
     while True:
         data = loader.get_batch(split)
         n = n + loader.batch_size
@@ -54,11 +60,11 @@ def eval_split(model, loader, eval_kwargs={}):
         fc_feats, att_feats, att_masks = tmp
         # forward the model to also get generated samples for each image
         with torch.no_grad():
-            seq, _, att = model(fc_feats, att_feats, att_masks, opt=eval_kwargs, mode='sample')
+            seq, _, attention_maps = model(fc_feats, att_feats, att_masks, opt=eval_kwargs, mode='sample')
             seq = seq.data
-            att = att.data
-            print("seq", seq)
-            print("att", att)
+            print("seq", seq.size())
+            print("att", len(attention_maps))
+            print("att", len(attention_maps[0].shape))
 
         sents = utils.decode_sequence(loader.get_vocab(), seq)
         for k, sent in enumerate(sents):
