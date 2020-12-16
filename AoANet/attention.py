@@ -24,6 +24,7 @@ def plot_attention(image, seq, attention_plot, output_file):
 
     len_seq = len(seq)
     for l in range(len_seq):
+        print(attention_plot[l])
         temp_att = np.resize(attention_plot[l], (32, 32))
         ax = fig.add_subplot(len_seq//2, len_seq//2, l+1)
         ax.set_title(seq[l])
