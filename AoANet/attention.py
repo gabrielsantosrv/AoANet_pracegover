@@ -28,7 +28,7 @@ def plot_attention(image, seq, attention_plot, output_file):
         ax = fig.add_subplot(len_seq//2, len_seq//2, l+1)
         ax.set_title(seq[l])
         img = ax.imshow(temp_image)
-        ax.imshow(temp_att, cmap='gray', alpha=0.6, extent=img.get_extent(), interpolation='bilinear')
+        ax.imshow(temp_att, cmap='gray', alpha=0.8, extent=img.get_extent(), interpolation='bilinear')
 
     plt.tight_layout()
     output_file = output_file.split('/')[1]
