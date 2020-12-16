@@ -82,7 +82,7 @@ def eval_split(model, loader, eval_kwargs={}):
             predictions.append(entry)
             image_path = os.path.join(eval_kwargs['image_root'], data['infos'][k]['file_path'])
             attention = get_attention_for_sentence(k, attention_maps)
-            plot_attention(image_path, sent.split(), attention, entry['file_name'])
+            plot_attention(image_path, sent.split(), attention, data['infos'][k]['file_path'])
 
             if verbose:
                 print('image {}: {}'.format(entry['image_id'], entry['caption']))
