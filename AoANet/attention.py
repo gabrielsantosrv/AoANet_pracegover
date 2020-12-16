@@ -15,7 +15,7 @@ import os
 import sys
 import misc.utils as utils
 import matplotlib.pyplot as plt
-
+from PIL import Image
 
 def plot_attention(image, seq, attention_plot, output_file):
     temp_image = np.array(Image.open(image))
