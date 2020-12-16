@@ -28,7 +28,9 @@ def plot_attention(image, seq, attention_plot, output_file):
         ax = fig.add_subplot(len_seq//2, len_seq//2, l+1)
         ax.set_title(seq[l])
         img = ax.imshow(temp_image)
-        ax.imshow(temp_att, cmap='viridis', alpha=0.6, extent=img.get_extent(), interpolation='bilinear')
+        img_plot = ax.imshow(temp_att, cmap='viridis', alpha=0.6, extent=img.get_extent(), interpolation='bilinear')
+        fig.colorbar(img_plot, ax=ax)
+
 
     plt.tight_layout()
     output_file = output_file.split('/')[1]
