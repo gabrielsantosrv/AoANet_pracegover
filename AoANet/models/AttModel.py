@@ -217,7 +217,7 @@ class AttModel(CaptionModel):
                 it = fc_feats.new_zeros(batch_size, dtype=torch.long)
 
             logprobs, state, att = self.get_logprobs_state(it, p_fc_feats, p_att_feats, pp_att_feats, p_att_masks, state)
-            attention_maps.append(att.numpy())
+            attention_maps.append(att.cpu().numpy())
             if decoding_constraint and t > 0:
                 tmp = logprobs.new_zeros(logprobs.size())
                 tmp.scatter_(1, seq[:,t-1].data.unsqueeze(1), float('-inf'))

@@ -17,21 +17,29 @@ import misc.utils as utils
 import matplotlib.pyplot as plt
 
 
-def plot_attention(image, result, attention_plot):
+def plot_attention(image, seq, attention_plot, output_file):
     temp_image = np.array(Image.open(image))
 
     fig = plt.figure(figsize=(10, 10))
 
-    len_result = len(result)
-    for l in range(len_result):
-        temp_att = np.resize(attention_plot[l], (8, 8))
-        ax = fig.add_subplot(len_result//2, len_result//2, l+1)
-        ax.set_title(result[l])
+    len_seq = len(seq)
+    for l in range(len_seq):
+        temp_att = np.resize(attention_plot[l], (32, 32))
+        ax = fig.add_subplot(len_seq//2, len_seq//2, l+1)
+        ax.set_title(seq[l])
         img = ax.imshow(temp_image)
         ax.imshow(temp_att, cmap='gray', alpha=0.6, extent=img.get_extent())
 
     plt.tight_layout()
-    plt.show()
+    plt.savefig("att_"+output_file)
+
+def get_attention_for_sentence(sent_index, attention_maps):
+    attention = []
+    for array in attention_maps:
+        attention.append(array[sent_index, :])
+
+    return attention
+
 
 def eval_split(model, loader, eval_kwargs={}):
     verbose = eval_kwargs.get('verbose', True)
@@ -45,7 +53,6 @@ def eval_split(model, loader, eval_kwargs={}):
     n = 0
     predictions = []
     iterations = 0
-    attention_weighs = []
 
     while True:
         data = loader.get_batch(split)
@@ -67,16 +74,15 @@ def eval_split(model, loader, eval_kwargs={}):
             print("att", len(attention_maps[0].shape))
 
         sents = utils.decode_sequence(loader.get_vocab(), seq)
+        print("sent size", len(sents[0]))
         for k, sent in enumerate(sents):
             entry = {'image_id': data['infos'][k]['id'], 'caption': sent}
             if eval_kwargs.get('dump_path', 0) == 1:
                 entry['file_name'] = data['infos'][k]['file_path']
             predictions.append(entry)
-            if eval_kwargs.get('dump_images', 0) == 1:
-                # dump the raw image to vis/ folder
-                cmd = 'cp "' + os.path.join(eval_kwargs['image_root'], data['infos'][k]['file_path']) + '" vis/imgs/img' + str(len(predictions)) + '.jpg' # bit gross
-                print(cmd)
-                os.system(cmd)
+            image_path = os.path.join(eval_kwargs['image_root'], data['infos'][k]['file_path'])
+            attention = get_attention_for_sentence(k, attention_maps)
+            plot_attention(image_path, sent.split(), attention, entry['file_name'])
 
             if verbose:
                 print('image {}: {}'.format(entry['image_id'], entry['caption']))
