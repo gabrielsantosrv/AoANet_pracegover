@@ -16,16 +16,18 @@ import sys
 import misc.utils as utils
 import matplotlib.pyplot as plt
 from PIL import Image
-
+import math
 def plot_attention(image, seq, attention_plot, output_file):
     temp_image = np.array(Image.open(image))
 
     fig = plt.figure(figsize=(30, 30))
 
     len_seq = len(seq)
+    #print("length", len_seq)
     for l in range(len_seq):
+        #print("attention", attention_plot[l].shape)
         temp_att = np.resize(attention_plot[l], (32, 32))
-        ax = fig.add_subplot(len_seq//2, len_seq//2, l+1)
+        ax = fig.add_subplot(math.ceil(math.sqrt(len_seq)), math.ceil(math.sqrt(len_seq)), l+1)
         ax.set_title(seq[l])
         img = ax.imshow(temp_image)
         img_plot = ax.imshow(temp_att, cmap='viridis', alpha=0.6, extent=img.get_extent(), interpolation='bilinear')
@@ -34,7 +36,7 @@ def plot_attention(image, seq, attention_plot, output_file):
 
     plt.tight_layout()
     output_file = output_file.split('/')[1]
-    plt.savefig("att_"+output_file)
+    plt.savefig("attention_maps/att_"+output_file)
 
 def get_attention_for_sentence(sent_index, attention_maps):
     attention = []

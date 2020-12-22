@@ -152,7 +152,9 @@ def eval_split(model, crit, loader, eval_kwargs={}):
         fc_feats, att_feats, att_masks = tmp
         # forward the model to also get generated samples for each image
         with torch.no_grad():
-            seq = model(fc_feats, att_feats, att_masks, opt=eval_kwargs, mode='sample')[0].data
+            print("fc_feats", fc_feats, "\natt_feats", att_feats, "\natt_masks", att_masks)
+            seq, _, _ = model(fc_feats, att_feats, att_masks, opt=eval_kwargs, mode='sample')
+            seq = seq.data
         
         # Print beam search
         if beam_size > 1 and verbose_beam:

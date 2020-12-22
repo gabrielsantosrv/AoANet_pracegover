@@ -180,7 +180,9 @@ class AoA_Decoder_Core(nn.Module):
         if self.out_res:
             # add residual connection
             output = output + h_att
-
+        print("output", output.size())
+        print("att", att.size())
+        print("mean_feats", mean_feats.size())
         output = self.out_drop(output)
         return output, state, F.softmax(att, dim=1)
 

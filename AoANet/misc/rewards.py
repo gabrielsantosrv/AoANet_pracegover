@@ -16,7 +16,7 @@ import sys
 
 sys.path.append("cider")
 from cider.pyciderevalcap.ciderD.ciderD import CiderD
-sys.path.append("/work/recod/gabriel.santos/AoANet/coco-caption")
+sys.path.append("/work/recod/gabriel.santos/AoANet_pracegover/AoANet/coco-caption")
 from pycocoevalcap.bleu.bleu import Bleu
 
 
