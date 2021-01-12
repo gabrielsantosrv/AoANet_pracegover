@@ -180,9 +180,6 @@ class AoA_Decoder_Core(nn.Module):
         if self.out_res:
             # add residual connection
             output = output + h_att
-        print("output", output.size())
-        print("att", att.size())
-        print("mean_feats", mean_feats.size())
         output = self.out_drop(output)
         return output, state, F.softmax(att, dim=1)
 
@@ -207,7 +204,6 @@ class AoAModel(AttModel):
 
     def _prepare_feature(self, fc_feats, att_feats, att_masks):
         att_feats, att_masks = self.clip_att(att_feats, att_masks)
-
         # embed att feats
         att_feats = pack_wrapper(self.att_embed, att_feats, att_masks)
         att_feats = self.refiner(att_feats, att_masks)

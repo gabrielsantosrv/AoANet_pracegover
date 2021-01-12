@@ -38,15 +38,18 @@ def count_bad(sen):
 def language_eval(dataset, preds, model_id, split):
     import sys
     sys.path.append("/work/recod/gabriel.santos/AoANet_pracegover/AoANet/coco-caption")
-    if 'pracegover' in dataset:
-        #annFile = '/work/recod/gabriel.santos/pracegover_dataset/pracegover_dataset.json'
+    if 'debug' in dataset:
+        annFile = '/work/recod/gabriel.santos/pracegover_debug/pracegover_captions_val2014.json'
+    elif '400k' in dataset:
+        annFile = '/work/recod/gabriel.santos/pracegover_dataset_400k/pracegover_captions_val2014.json'
+    elif 'pracegover' in dataset:
         annFile = '/work/recod/gabriel.santos/pracegover_dataset/pracegover_captions_val2014.json'
     elif 'flickr30k' in dataset or 'f30k' in dataset:
         annFile = 'coco-caption/f30k_captions4eval.json'
     elif 'coco' in dataset:
         annFile = '/work/recod/gabriel.santos/AoANet/coco-caption/annotations/captions_val2014.json'
     #print('dataset', dataset)
-    #print('annFile', annFile)
+    print('============ DATASET', annFile, '=======================')
     #print('split', split)
 
     from pycocotools.coco import COCO
@@ -142,7 +145,7 @@ def eval_split(model, crit, loader, eval_kwargs={}):
                 loss = crit(model(fc_feats, att_feats, labels, att_masks), labels[:,1:], masks[:,1:]).item()
             loss_sum = loss_sum + loss
             loss_evals = loss_evals + 1
-
+        
         # forward the model to also get generated samples for each image
         # Only leave one feature for each image, in case duplicate sample
         tmp = [data['fc_feats'][np.arange(loader.batch_size) * loader.seq_per_img], 
@@ -152,7 +155,6 @@ def eval_split(model, crit, loader, eval_kwargs={}):
         fc_feats, att_feats, att_masks = tmp
         # forward the model to also get generated samples for each image
         with torch.no_grad():
-            print("fc_feats", fc_feats, "\natt_feats", att_feats, "\natt_masks", att_masks)
             seq, _, _ = model(fc_feats, att_feats, att_masks, opt=eval_kwargs, mode='sample')
             seq = seq.data
         

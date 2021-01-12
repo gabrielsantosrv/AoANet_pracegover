@@ -192,7 +192,6 @@ class AttModel(CaptionModel):
         return seq.transpose(0, 1), seqLogprobs.transpose(0, 1)
 
     def _sample(self, fc_feats, att_feats, att_masks=None, opt={}):
-
         sample_method = opt.get('sample_method', 'greedy')
         beam_size = opt.get('beam_size', 1)
         temperature = opt.get('temperature', 1.0)
@@ -215,21 +214,19 @@ class AttModel(CaptionModel):
         for t in range(self.seq_length + 1):
             if t == 0: # input <bos>
                 it = fc_feats.new_zeros(batch_size, dtype=torch.long)
-
             logprobs, state, att = self.get_logprobs_state(it, p_fc_feats, p_att_feats, pp_att_feats, p_att_masks, state)
-            attention_maps.append(att.cpu().numpy())
+            # DESCOMENTAR APENAS QUANDO FOR PLOTAR ATTENTION MAP
+            # attention_maps.append(att.cpu().numpy())
             if decoding_constraint and t > 0:
                 tmp = logprobs.new_zeros(logprobs.size())
                 tmp.scatter_(1, seq[:,t-1].data.unsqueeze(1), float('-inf'))
                 logprobs = logprobs + tmp
-
             if remove_bad_endings and t > 0:
                 tmp = logprobs.new_zeros(logprobs.size())
                 prev_bad = np.isin(seq[:,t-1].data.cpu().numpy(), self.bad_endings_ix)
                 # Impossible to generate remove_bad_endings
                 tmp[torch.from_numpy(prev_bad.astype('uint8')), 0] = float('-inf')
                 logprobs = logprobs + tmp
-
             # Mess with trigrams
             if block_trigrams and t >= 3:
                 # Store trigram generated at last step
