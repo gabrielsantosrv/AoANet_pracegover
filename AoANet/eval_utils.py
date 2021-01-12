@@ -17,6 +17,7 @@ import misc.utils as utils
 
 #sys.path.append("bert_score")
 #from BERTScore import BERTScore
+from OCR import OCR
 
 bad_endings = ['a','an','the','in','for','at','of','with','before','after','on','upon','near','to','is','are','am']
 bad_endings += ['the']
@@ -178,6 +179,10 @@ def eval_split(model, crit, loader, eval_kwargs={}):
             entry = {'image_id': data['infos'][k]['id'], 'caption': sent}
             if eval_kwargs.get('dump_path', 0) == 1:
                 entry['file_name'] = data['infos'][k]['file_path']
+
+            image_path = os.path.join(eval_kwargs['image_root'], data['infos'][k]['file_path'])
+            description = entry['caption']
+            entry['caption'] = OCR(image_path, description)
             predictions.append(entry)
             if eval_kwargs.get('dump_images', 0) == 1:
                 # dump the raw image to vis/ folder
@@ -186,6 +191,7 @@ def eval_split(model, crit, loader, eval_kwargs={}):
                 os.system(cmd)
 
             if verbose:
+                print("path", os.path.join(eval_kwargs['image_root'], data['infos'][k]['file_path']))
                 print('image {}: {}'.format(entry['image_id'], entry['caption']))
 
         iterations += 1
